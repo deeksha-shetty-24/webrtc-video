@@ -2,14 +2,15 @@
     <video muted id="local-video" autoplay></video>
     <video id="remote-video" autoplay></video>
     <div class="chat-box" id="chat_area"></div>
-    <input placeholder="Type a new message" type="text" id="new_message" />
-    <button onclick="sendMessage()">Send</button>
+    <input placeholder="Type a new message" (change)="onTypeMessage($event)" [value]="message" type="text"
+        id="new_message" />
+    <button (click)="sendMessage()">Send</button>
     <div class="call-action-div">
-
-        <button (click)="muteVideo()">
-            <!-- <fa-icon [icon]="faMicrophone"></fa-icon> -->
-            Mute Video</button>
-        <button (click)="muteAudio()">Mute Audio</button>
-        <button (click)="leaveCall()">End call</button>
+        <a class="nav-link text-muted px-3" (click)="muteVideo()"><i class="fas fa-video" *ngIf="isVideo"></i>
+            <i class="fas fa-video-slash" *ngIf="!isVideo"></i>
+        </a>
+        <a class="nav-link text-muted px-3" (click)="muteAudio()"><i class="fas fa-microphone-slash" *ngIf="!isAudio"></i>
+            <i class="fas fa-microphone" *ngIf="isAudio"></i></a>
+        <a class="nav-link text-muted px-3" (click)="leaveCall()" title="End call"><i class="fas fa-phone-square-alt"></i></a>
     </div>
 </div>

@@ -30,6 +30,10 @@
     bottom: 32px;
 }
 
-button {
+.text-muted {
+    color: #3b63e3 !important;
+}
+
+i {
     cursor: pointer;
 }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AppService } from '../services/app-service.service';
 import { MeetingService } from '../services/meeting-service.service';
 // import { faMicrophone } from '@fortawesome/free-solid-svg-icons';
@@ -29,16 +30,20 @@ export class MeetingComponent implements OnInit {
 
     audio: true
   }
+  message = "";
   constraints: any;
   localStream: any;
   peerConn: any;
-  sendChannel: any;
+  sendChannel: RTCDataChannel;
   remoteVideoEle: any;
   localVideoEle: any;
   isAudio = true;
   isVideo = true;
-  constructor(private appService: AppService,
+  thisRef: any;
+  privateMessages = [];
+  constructor(private router: Router, private appService: AppService,
     private meetingService: MeetingService) {
+    this.thisRef = this;
     if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
       this.constraints = this.mobileConstraints;
     } else {
@@ -100,11 +105,25 @@ export class MeetingComponent implements OnInit {
       }
 
       this.peerConn = new RTCPeerConnection(configuration)
-      this.sendChannel = this.peerConn.createDataChannel("sendChannel", null);
-      this.sendChannel.onopen = this.onSendChannelStateChange;
-      this.sendChannel.onclose = this.onSendChannelStateChange;
+      this.sendChannel = this.peerConn.createDataChannel("RTCDataChannel");
+      this.sendChannel.onopen = (event) => {
+        if (this.sendChannel) {
+          let readyState = this.sendChannel.readyState;
+          console.log('Send channel state is: ' + readyState);
+        }
+      };
+      this.sendChannel.onclose = (event) => {
+        if (this.sendChannel) {
+          let readyState = this.sendChannel.readyState;
+          console.log('Send channel state is: ' + readyState);
+        }
+      };
 
-      this.sendChannel.onmessage = this.onReceiveMessageCallback;
+      this.sendChannel.onmessage = (event) => {
+        this.privateMessages.push({ message: event.data, local: false });
+        console.log('Received Message', event.data);
+        console.log(this.privateMessages);
+      }
 
       this.peerConn.addStream(this.localStream)
 
@@ -152,7 +171,26 @@ export class MeetingComponent implements OnInit {
       }
 
       this.peerConn = new RTCPeerConnection(configuration)
-      this.peerConn.ondatachannel = this.receiveChannelCallback;
+      this.peerConn.ondatachannel = (event) => {
+        this.sendChannel = event.channel;
+        this.sendChannel.onmessage = (event) => {
+          this.privateMessages.push({ message: event.data, local: false });
+          console.log('Received Message', event.data);
+          console.log(this.privateMessages);
+        }
+        this.sendChannel.onopen = (event) => {
+          if (this.sendChannel) {
+            let readyState = this.sendChannel.readyState;
+            console.log('Receive channel state is: ' + readyState);
+          }
+        }
+        this.sendChannel.onclose = (event) => {
+          if (this.sendChannel) {
+            let readyState = this.sendChannel.readyState;
+            console.log('Receive channel state is: ' + readyState);
+          }
+        }
+      }
 
       this.peerConn.addStream(this.localStream)
 
@@ -181,30 +219,6 @@ export class MeetingComponent implements OnInit {
     })
   }
 
-  receiveChannelCallback(event) {
-    console.log('Receive Channel Callback');
-    this.sendChannel = event.channel;
-    this.sendChannel.onmessage = this.onReceiveMessageCallback;
-    this.sendChannel.onopen = this.onReceiveChannelStateChange;
-    this.sendChannel.onclose = this.onReceiveChannelStateChange;
-  }
-
-  onReceiveMessageCallback(event) {
-    console.log('Received Message', event.data);
-  }
-
-  onSendChannelStateChange() {
-    var dataChannel = this as any;
-    var readyState = dataChannel.readyState;
-    console.log('Send channel state is: ' + readyState);
-  }
-
-  onReceiveChannelStateChange() {
-    var dataChannel = this as any;
-    var readyState = dataChannel.readyState;
-    console.log('Receive channel state is: ' + readyState);
-  }
-
   leaveCall() {
     this.sendData({
       type: "end_call"
@@ -221,6 +235,7 @@ export class MeetingComponent implements OnInit {
     this.peerConn.close();
     this.peerConn.onicecandidate = null;
     this.peerConn.onaddstream = null;
+    this.router.navigate(['/chats']);
   }
 
   createAndSendOffer() {
@@ -246,6 +261,16 @@ export class MeetingComponent implements OnInit {
     }, error => {
       console.log(error)
     })
+  }
+
+  onTypeMessage(event) {
+    this.message = event.target.value;
+  }
+
+  sendMessage() {
+    this.privateMessages.push({ message: this.message, local: true });
+    this.sendChannel.send(this.message);
+    console.log(this.privateMessages);
   }
 
   muteAudio() {
