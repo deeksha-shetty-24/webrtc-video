@@ -35,6 +35,8 @@ export class MeetingComponent implements OnInit {
   sendChannel: any;
   remoteVideoEle: any;
   localVideoEle: any;
+  isAudio = true;
+  isVideo = true;
   constructor(private appService: AppService,
     private meetingService: MeetingService) {
     if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
@@ -62,16 +64,13 @@ export class MeetingComponent implements OnInit {
     const data = JSON.parse(event.data);
     switch (data.type) {
       case "offer":
-        console.log("Offer")
         this.peerConn.setRemoteDescription(data.offer)
         this.createAndSendAnswer()
         break
       case "answer":
-        console.log("Answer")
         this.peerConn.setRemoteDescription(data.answer)
         break
       case "candidate":
-        console.log("Remote Candidate")
         this.peerConn.addIceCandidate(data.candidate)
         break
       case "leave":
@@ -195,17 +194,18 @@ export class MeetingComponent implements OnInit {
   }
 
   onSendChannelStateChange() {
-    var readyState = this.sendChannel.readyState;
+    var dataChannel = this as any;
+    var readyState = dataChannel.readyState;
     console.log('Send channel state is: ' + readyState);
   }
 
   onReceiveChannelStateChange() {
-    var readyState = this.sendChannel.readyState;
+    var dataChannel = this as any;
+    var readyState = dataChannel.readyState;
     console.log('Receive channel state is: ' + readyState);
   }
 
   leaveCall() {
-    // connectedUser = null;
     this.sendData({
       type: "end_call"
     })
@@ -246,6 +246,16 @@ export class MeetingComponent implements OnInit {
     }, error => {
       console.log(error)
     })
+  }
+
+  muteAudio() {
+    this.isAudio = !this.isAudio
+    this.localStream.getAudioTracks()[0].enabled = this.isAudio
+  }
+
+  muteVideo() {
+    this.isVideo = !this.isVideo
+    this.localStream.getVideoTracks()[0].enabled = this.isVideo
   }
 
   sendData(data) {

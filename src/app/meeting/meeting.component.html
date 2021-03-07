@@ -6,10 +6,10 @@
     <button onclick="sendMessage()">Send</button>
     <div class="call-action-div">
 
-        <button onclick="muteVideo()">
+        <button (click)="muteVideo()">
             <!-- <fa-icon [icon]="faMicrophone"></fa-icon> -->
             Mute Video</button>
-        <button onclick="muteAudio()">Mute Audio</button>
-        <button onclick="closePeer()">End call</button>
+        <button (click)="muteAudio()">Mute Audio</button>
+        <button (click)="leaveCall()">End call</button>
     </div>
 </div>

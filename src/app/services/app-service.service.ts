@@ -23,7 +23,6 @@ export class AppService {
       sessionStorage.setItem(keys.userInfoKey, JSON.stringify(userInfo));
       this.webSocket = new WebSocket(urls.webSocketUrl);
       this.webSocket.onmessage = (event) => {
-        console.log("Event triggered", event.type)
         this.handleSignalingData(event);
       };
 
@@ -83,7 +82,4 @@ export class AppService {
   sendWSData(data) {
     this.webSocket.send(JSON.stringify(data));
   }
-
-
-
 }

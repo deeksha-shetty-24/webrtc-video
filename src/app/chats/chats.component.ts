@@ -95,6 +95,7 @@ export class ChatsComponent implements OnInit {
     e.preventDefault();
     this.appService.validateMeetingId().subscribe(isScheduled => {
       if (isScheduled) {
+        this.meetingService.isHost = false;
         this.isScheduled = isScheduled;
         this.router.navigate(['/meeting']);
       } else {
