@@ -1,0 +1,15 @@
+<div id="video-call-div">
+    <video muted id="local-video" autoplay></video>
+    <video id="remote-video" autoplay></video>
+    <div class="chat-box" id="chat_area"></div>
+    <input placeholder="Type a new message" type="text" id="new_message" />
+    <button onclick="sendMessage()">Send</button>
+    <div class="call-action-div">
+
+        <button onclick="muteVideo()">
+            <!-- <fa-icon [icon]="faMicrophone"></fa-icon> -->
+            Mute Video</button>
+        <button onclick="muteAudio()">Mute Audio</button>
+        <button onclick="closePeer()">End call</button>
+    </div>
+</div>

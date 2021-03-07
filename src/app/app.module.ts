@@ -3,8 +3,10 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
-import { ChatsComponent } from './chats/chats.component';
+import { AppService } from './services/app-service.service';
+import { HttpClientModule } from '@angular/common/http';
+import { MeetingService } from './services/meeting-service.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [
@@ -12,9 +14,14 @@ import { ChatsComponent } from './chats/chats.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    FontAwesomeModule
   ],
-  providers: [],
+  providers: [
+    AppService,
+    MeetingService 
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

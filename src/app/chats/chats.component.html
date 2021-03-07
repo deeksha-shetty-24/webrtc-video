@@ -1,1 +1,238 @@
-<p>chats works!</p>
+<div class="layout">
+
+    <!-- Navigation -->
+    <div class="navigation navbar navbar-light justify-content-center py-xl-7">
+
+        <!-- Brand -->
+        <a href="#" class="d-none d-xl-block mb-6">
+            <img src="assets/images/brand.svg" class="mx-auto fill-primary" data-inject-svg="" alt="" style="height: 46px;">
+        </a>
+
+        <!-- Menu -->
+        <ul class="nav navbar-nav flex-row flex-xl-column flex-grow-1 justify-content-between justify-content-xl-center py-3 py-lg-0" role="tablist">
+
+            <!-- Invisible item to center nav vertically -->
+            <li class="nav-item d-none d-xl-block invisible flex-xl-grow-1">
+                <a class="nav-link position-relative p-0 py-xl-3" href="#" title="">
+                    <i class="icon-lg fe-x"></i>
+                </a>
+            </li>
+
+
+            <!-- Chats -->
+            <li class="nav-item mt-xl-9">
+                <a class="nav-link position-relative p-0 py-xl-3 active" data-toggle="tab" href="#tab-content-dialogs" title="Chats" role="tab">
+                    <i class="icon-lg fe-message-square"></i>
+                    <div class="badge badge-dot badge-primary badge-bottom-center"></div>
+                </a>
+            </li>
+
+            <!-- Settings -->
+            <li class="nav-item mt-xl-9">
+                <a class="nav-link position-relative p-0 py-xl-3" title="Logout" (click)="logOut()">
+                    <i class="icon-lg fe-log-out"></i>
+                </a>
+            </li>
+
+        </ul>
+        <!-- Menu -->
+
+    </div>
+    <!-- Navigation -->
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="tab-content h-100" role="tablist">
+            <div class="tab-pane fade h-100 show active" id="tab-content-dialogs" role="tabpanel">
+                <div class="d-flex flex-column h-100">
+
+                    <div class="hide-scrollbar">
+                        <div class="container-fluid py-6">
+                            <h2 class="font-bold mb-6">Chats</h2>
+
+                            <nav class="nav d-block list-discussions-js mb-n6">
+                                <a *ngFor="let user of users" class="text-reset nav-link p-0 mb-6 chat-selector" (click)="onRecipientSelect(user)">
+                                    <div class="card card-active-listener">
+                                        <div class="card-body">
+                                            <div class="media">
+                                                <div class="media-body overflow-hidden">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <h6 class="text-truncate mb-0 mr-auto">{{ user.fullName }}</h6>
+                                                        <p>{{ user.userName }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        
+                                    </div>
+                                </a>
+
+                            </nav>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Sidebar -->
+
+    <!-- Main Content -->
+    <div class="main" data-mobile-height="">
+
+        <!-- Chat -->
+        <div id="chat-1" class="chat dropzone-form-js">
+
+            <!-- Chat: body -->
+            <div class="chat-body" *ngIf="activeRecipient?.userName">
+
+                <!-- Chat: Header -->
+                <div class="chat-header border-bottom py-4 py-lg-6 px-lg-8">
+                    <div class="container-xxl">
+
+                        <div class="row align-items-center">
+
+                            <!-- Close chat(mobile) -->
+                            <div class="col-3 d-xl-none">
+                                <ul class="list-inline mb-0">
+                                    <li class="list-inline-item">
+                                        <a class="text-muted px-0" href="#" id="chat-back-navigation" (click)="$event.preventDefault()">
+                                            <i class="icon-md fe-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Chat photo -->
+                            <div class="col-6 col-xl-6">
+                                <div class="media text-center text-xl-left" style="padding-bottom: 4px">
+                                    <div class="media-body align-self-center text-truncate" >
+                                        <h6 class="text-truncate mb-n1">{{ activeRecipient.fullName }}</h6>
+                                    </div>
+                                </div>
+                                <span *ngIf="meetingId" style="border: solid 1px #38b9bf; background-color: aliceblue; padding: 6px; margin-top: 8px; font-size: 11px;">
+                                    <span>Meeting Id is {{ meetingId }}</span>
+                                </span>
+                                <button *ngIf="meetingId" (click)="startCall()"  type="button" class="btn btn-ico btn-primary rounded-circle" style="width: 32px;height: 32px;background-color: green;margin-left: 8px;">
+                                    <span class="icon-sm fa fa-phone-alt"></span>
+                                </button>
+                            </div>
+
+                            <!-- Chat toolbar -->
+                            <div class="col-3 col-xl-6 text-right">
+                                <ul class="nav justify-content-end">
+                                    <li class="nav-item list-inline-item d-none d-xl-block mr-5">
+                                        <a class="nav-link text-muted px-3" data-toggle="collapse" href="#" (click)="onHostClick($event)" title="Host meeting">
+                                            <i class="fa icon-lg fa-users"></i>
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item list-inline-item d-none d-xl-block mr-3">
+                                        <a class="nav-link text-muted px-3" href="#" title="Join meeting" (click)="onJoinClick($event)">
+                                            <i class="fa icon-lg fa-phone-square-alt"></i>
+                                        </a>
+                                    </li>
+
+                                    <!-- Mobile nav -->
+                                    <li class="nav-item list-inline-item d-block d-xl-none">
+                                        <div class="dropdown">
+                                            <a class="nav-link text-muted px-0" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="icon-md fe-more-vertical"></i>
+                                            </a>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item d-flex align-items-center" data-toggle="collapse" href="#" (click)="onHostClick($event)">
+                                                    Host <span class="ml-auto pl-5 fa fa-users"></span>
+                                                </a>
+
+                                                <a class="dropdown-item d-flex align-items-center" href="#" (click)="onJoinClick($event)">
+                                                    Join <span class="ml-auto pl-5 fe-more-horizontal fa fa-phone-square-alt"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <!-- Mobile nav -->
+                                </ul>
+                            </div>
+
+                        </div><!-- .row -->
+
+                    </div>
+                </div>
+                <!-- Chat: Header -->
+
+                <!-- Chat: Content-->
+                <div class="chat-content px-lg-8">
+                    <div class="container-xxl py-6 py-lg-10">
+
+                        <div *ngFor="let msg of messages" class="message" [ngClass]="{ 'message-right': msg.local }">
+
+                            <div class="message-body">
+
+                                <div class="message-row">
+                                    <div class="d-flex align-items-center" [ngClass]="{ 'justify-content-end': msg.local }">
+
+                                        <div class="message-content bg-light" [ngClass]="{ 'bg-primary text-white': msg.local, 'bg-light': !msg.local }">
+                                            <div>{{ msg.message }}</div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- Message: row -->
+
+                            </div>
+                            <!-- Message: body -->
+                        </div>
+
+
+                    </div>
+
+                    <!-- Scroll to end -->
+                    <div class="end-of-chat"></div>
+                </div>
+                <!-- Chat: Content -->
+
+                <div class="chat-files hide-scrollbar px-lg-8">
+                    <div class="container-xxl">
+                        <div class="dropzone-previews-js form-row py-4"></div>
+                    </div>
+                </div>
+
+                <!-- Chat: Footer -->
+                <div class="chat-footer border-top py-4 py-lg-6 px-lg-8">
+                    <div class="container-xxl">
+
+                        <form id="chat-id-1-form" data-emoji-form="">
+                            <div class="form-row align-items-center">
+                                <div class="col">
+                                    <div class="input-group">
+                                        <textarea id="chat-id-1-input" (change)="onTypeMessage($event)" [value]="message" class="form-control bg-transparent border-0" placeholder="Type your message..." rows="1" data-emoji-input="" data-autosize="true"></textarea>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-auto">
+                                    <button class="btn btn-ico btn-primary rounded-circle" type="button" (click)="onSendMessage()">
+                                        <span class="fe-send"></span>
+                                    </button>
+                                </div>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+                <!-- Chat: Footer -->
+            </div>
+            <!-- Chat: body -->
+
+
+        </div>
+        <!-- Chat -->
+
+    </div>
+
+</div>
