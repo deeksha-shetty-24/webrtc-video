@@ -1,16 +1,159 @@
-<div id="video-call-div">
-    <video muted id="local-video" autoplay></video>
-    <video id="remote-video" autoplay></video>
-    <div class="chat-box" id="chat_area"></div>
-    <input placeholder="Type a new message" (change)="onTypeMessage($event)" [value]="message" type="text"
-        id="new_message" />
-    <button (click)="sendMessage()">Send</button>
-    <div class="call-action-div">
-        <a class="nav-link text-muted px-3" (click)="muteVideo()"><i class="fas fa-video" *ngIf="isVideo"></i>
-            <i class="fas fa-video-slash" *ngIf="!isVideo"></i>
+<div class="layout">
+
+    <!-- Navigation -->
+    <div class="navigation navbar navbar-light justify-content-center py-xl-7">
+
+        <!-- Brand -->
+        <a href="#" class="d-none d-xl-block mb-6">
+            <img src="assets/images/brand.svg" class="mx-auto fill-primary" data-inject-svg="" alt="" style="height: 46px;">
         </a>
-        <a class="nav-link text-muted px-3" (click)="muteAudio()"><i class="fas fa-microphone-slash" *ngIf="!isAudio"></i>
-            <i class="fas fa-microphone" *ngIf="isAudio"></i></a>
-        <a class="nav-link text-muted px-3" (click)="leaveCall()" title="End call"><i class="fas fa-phone-square-alt"></i></a>
+
+        <!-- Menu -->
+        <ul class="nav navbar-nav flex-row flex-xl-column flex-grow-1 justify-content-between justify-content-xl-center py-3 py-lg-0" role="tablist">
+
+            <!-- Invisible item to center nav vertically -->
+            <li class="nav-item d-none d-xl-block invisible flex-xl-grow-1">
+                <a class="nav-link position-relative p-0 py-xl-3" href="#" title="">
+                    <i class="icon-lg fe-x"></i>
+                </a>
+            </li>
+
+
+            <!-- Settings -->
+            <li class="nav-item mt-xl-9">
+                <a class="nav-link position-relative p-0 py-xl-3" title="Logout" (click)="logOut()">
+                    <i class="icon-lg fe-log-out"></i>
+                </a>
+            </li>
+
+        </ul>
+        <!-- Menu -->
+
     </div>
+
+    <div style="width: 100%;">
+        <div class="container-fluid">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link" [ngClass]="{'active': activeTab === 'CALL'}" area-current="page" href="#" (click)="setActiveTab($event, 'CALL')">Call</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" [ngClass]="{'active': activeTab === 'CHAT'}" area-current="page" href="#" (click)="setActiveTab($event, 'CHAT')">Chat</a>
+                </li>
+            </ul>
+            <div class="row">
+                <div class="col-md-12" [ngClass]="{'hide-tab': activeTab === 'CHAT'}">
+                    <div id="video-call-div">
+                        <video muted id="local-video" autoplay></video>
+                        <video id="remote-video" autoplay></video>
+                        <div class="call-action-div">
+                            <button type="button" class="btn btn-ico btn-primary rounded-circle" (click)="muteVideo()">
+                                <i class="fas fa-video" *ngIf="isVideo"></i>
+                                <i class="fas fa-video-slash" *ngIf="!isVideo"></i>
+                            </button>
+                            <button type="button" class="btn btn-ico btn-primary rounded-circle" (click)="muteAudio()">
+                                <i class="fas fa-microphone-slash" *ngIf="!isAudio"></i>
+                                <i class="fas fa-microphone" *ngIf="isAudio"></i>
+                            </button>
+                            <button type="button" class="btn btn-ico btn-primary rounded-circle" (click)="leaveCall()">
+                                <i class="fas fa-phone-square"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12" [ngClass]="{'hide-tab': activeTab === 'CALL'}">
+                    <div id="chat-1" class="chat dropzone-form-js">
+
+                        <!-- Chat: body -->
+                        <div class="chat-body" *ngIf="activeRecipient?.userName" style="width: 100%;">
+            
+                            <!-- Chat: Header -->
+                            <div class="chat-header border-bottom py-4 py-lg-6 px-lg-8">
+                                <div class="container-xxl">
+            
+                                    <div class="row align-items-center">
+            
+                                        <div class="col-6 col-xl-6">
+                                            <div class="media text-center text-xl-left" style="padding-bottom: 4px">
+                                                <div class="media-body align-self-center text-truncate" >
+                                                    <h6 class="text-truncate mb-n1">{{ activeRecipient.fullName }}</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+            
+                                </div>
+                            </div>
+                            <div class="chat-content px-lg-8">
+                                <div class="container-xxl py-6 py-lg-10">
+            
+                                    <div *ngFor="let msg of privateMessages" class="message" [ngClass]="{ 'message-right': msg.local }">
+            
+                                        <div class="message-body">
+            
+                                            <div class="message-row">
+                                                <div class="d-flex align-items-center" [ngClass]="{ 'justify-content-end': msg.local }">
+            
+                                                    <div class="message-content bg-light" [ngClass]="{ 'bg-primary text-white': msg.local, 'bg-light': !msg.local }">
+                                                        <div>{{ msg.message }}</div>
+                                                    </div>
+            
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+            
+            
+                                </div>
+            
+                                <div class="end-of-chat"></div>
+                            </div>
+                            <div class="chat-files hide-scrollbar px-lg-8">
+                                <div class="container-xxl">
+                                    <div class="dropzone-previews-js form-row py-4"></div>
+                                </div>
+                            </div>
+            
+                            <div class="chat-footer border-top py-4 py-lg-6 px-lg-8">
+                                <div class="container-xxl">
+            
+                                    <form id="chat-id-1-form" data-emoji-form="">
+                                        <div class="form-row align-items-center">
+                                            <div class="col">
+                                                <div class="input-group">
+                                                    <textarea id="chat-id-1-input" (change)="onTypeMessage($event)" [value]="message" class="form-control bg-transparent border-0" placeholder="Type your message..." rows="1" data-emoji-input="" data-autosize="true"></textarea>
+            
+                                                </div>
+            
+                                            </div>
+            
+                                            <div class="col-auto">
+                                                <button class="btn btn-ico btn-primary rounded-circle" type="button" (click)="onSendMessage()">
+                                                    <span class="fe-send"></span>
+                                                </button>
+                                            </div>
+            
+                                        </div>
+            
+                                    </form>
+            
+                                </div>
+                            </div>
+                        </div>
+            
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main" data-mobile-height="">
+
+        <!-- Chat -->
+        
+        <!-- Chat -->
+
+    </div>
+
 </div>

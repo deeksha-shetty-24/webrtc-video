@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { UserInfo } from '../models/user.model';
 import { AppService } from '../services/app-service.service';
 import { MeetingService } from '../services/meeting-service.service';
 // import { faMicrophone } from '@fortawesome/free-solid-svg-icons';
@@ -8,7 +10,7 @@ import { MeetingService } from '../services/meeting-service.service';
   templateUrl: './meeting.component.html',
   styleUrls: ['./meeting.component.css']
 })
-export class MeetingComponent implements OnInit {
+export class MeetingComponent implements OnInit, OnDestroy {
 
   desktopConstraints = {
     video: {
@@ -41,6 +43,9 @@ export class MeetingComponent implements OnInit {
   isVideo = true;
   thisRef: any;
   privateMessages = [];
+  subscriptions: Subscription[] = [];
+  activeTab = 'CALL';
+  activeRecipient: UserInfo;
   constructor(private router: Router, private appService: AppService,
     private meetingService: MeetingService) {
     this.thisRef = this;
@@ -49,11 +54,12 @@ export class MeetingComponent implements OnInit {
     } else {
       this.constraints = this.desktopConstraints;
     }
-    this.appService.webSocketEvent.subscribe(x => {
+    this.subscriptions.push(this.appService.webSocketEvent.subscribe(x => {
       if (x.data) {
         this.handleSignallingData(x);
       }
-    });
+    }))
+    this.appService.selectedRecipient.subscribe(x => this.activeRecipient = x);;
   }
 
   ngOnInit(): void {
@@ -85,8 +91,6 @@ export class MeetingComponent implements OnInit {
   }
 
   startCall() {
-    document.getElementById("video-call-div")
-      .style.display = "inline"
 
     navigator.getUserMedia(this.constraints, (stream) => {
       console.log("Local Stream:", stream);
@@ -151,8 +155,6 @@ export class MeetingComponent implements OnInit {
   }
 
   joinCall() {
-    document.getElementById("video-call-div")
-      .style.display = "inline"
 
     navigator.getUserMedia(this.constraints, (stream) => {
       console.log("Local Stream:", stream);
@@ -227,11 +229,6 @@ export class MeetingComponent implements OnInit {
   }
 
   handleLeave() {
-    this.remoteVideoEle = document.getElementById("remote-video");
-    this.remoteVideoEle.srcObject = null;
-    this.localVideoEle = document.getElementById("local-video");
-    this.localVideoEle.srcObject = null;
-
     this.peerConn.close();
     this.peerConn.onicecandidate = null;
     this.peerConn.onaddstream = null;
@@ -267,10 +264,11 @@ export class MeetingComponent implements OnInit {
     this.message = event.target.value;
   }
 
-  sendMessage() {
+  onSendMessage() {
     this.privateMessages.push({ message: this.message, local: true });
     this.sendChannel.send(this.message);
     console.log(this.privateMessages);
+    this.message = '';
   }
 
   muteAudio() {
@@ -285,5 +283,20 @@ export class MeetingComponent implements OnInit {
 
   sendData(data) {
     this.appService.sendToActiveRecepient(data);
+  }
+
+  ngOnDestroy(): void {
+    this.appService.handleSignalingData({});
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  logOut() {
+    this.appService.logout();
+    this.router.navigate(['/']);
+  }
+
+  setActiveTab(e, tab) {
+    e.preventDefault();
+    this.activeTab = tab;
   }
 }
