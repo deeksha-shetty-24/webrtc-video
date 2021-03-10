@@ -54,6 +54,7 @@ i {
 @media only screen and (max-width: 600px) {
     #remote-video {
       height: 365px;
+      width: 100%;
     }
     #local-video {
         height: 100px;

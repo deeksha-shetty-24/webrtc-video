@@ -4,9 +4,9 @@
     <div class="navigation navbar navbar-light justify-content-center py-xl-7">
 
         <!-- Brand -->
-        <a href="#" class="d-none d-xl-block mb-6">
+        <!-- <a href="#" class="d-none d-xl-block mb-6">
             <img src="assets/images/brand.svg" class="mx-auto fill-primary" data-inject-svg="" alt="" style="height: 46px;">
-        </a>
+        </a> -->
 
         <!-- Menu -->
         <ul class="nav navbar-nav flex-row flex-xl-column flex-grow-1 justify-content-between justify-content-xl-center py-3 py-lg-0" role="tablist">
@@ -39,7 +39,7 @@
 
                     <div class="hide-scrollbar">
                         <div class="container-fluid py-6">
-                            <h2 class="font-bold mb-6">Chats</h2>
+                            <h2 class="font-bold mb-6">Chats - {{currentUser?.fullName}}</h2>
 
                             <nav class="nav d-block list-discussions-js mb-n6">
                                 <a *ngFor="let user of users" class="text-reset nav-link p-0 mb-6 chat-selector" (click)="onRecipientSelect(user)">
@@ -106,7 +106,7 @@
                                 <span *ngIf="meetingId" style="border: solid 1px #38b9bf; background-color: aliceblue; padding: 6px; margin-top: 8px; font-size: 11px;">
                                     <span>Meeting Id is {{ meetingId }}</span>
                                 </span>
-                                <button *ngIf="meetingId" (click)="startCall()"  type="button" class="btn btn-ico btn-primary rounded-circle" style="width: 32px;height: 32px;background-color: green;margin-left: 8px;">
+                                <button *ngIf="meetingId" title="Start Call" (click)="startCall()"  type="button" class="btn btn-ico btn-primary rounded-circle" style="width: 32px;height: 32px;background-color: green;margin-left: 8px;">
                                     <span class="icon-sm fa fa-phone-alt"></span>
                                 </button>
                             </div>

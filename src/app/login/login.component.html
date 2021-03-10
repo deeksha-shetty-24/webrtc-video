@@ -16,13 +16,15 @@
                     <!-- Email -->
                     <div class="form-group">
                         <label for="email" class="sr-only">Full name</label>
-                        <input type="email" class="form-control form-control-lg" (change)="onFullName($event)" id="fullname" placeholder="Enter your full name">
+                        <input type="email" class="form-control form-control-lg" (change)="onFullName($event)"
+                            id="fullname" placeholder="Enter your full name" autocomplete="off">
                     </div>
 
                     <!-- Password -->
                     <div class="form-group">
                         <label for="text" class="sr-only">User name</label>
-                        <input type="text" class="form-control form-control-lg" id="username" placeholder="Enter your username" (change)="onUserName($event)">
+                        <input type="text" class="form-control form-control-lg" id="username"
+                            placeholder="Enter your username" (change)="onUserName($event)" autocomplete="off">
                     </div>
 
                     <!-- Submit -->
