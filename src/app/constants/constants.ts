@@ -3,8 +3,8 @@ export const keys = {
 }
 
 export const urls = {
-    webSocketUrl: 'wss://glacial-reaches-65725.herokuapp.com/',
-    apiBaseUrl: 'https://glacial-reaches-65725.herokuapp.com/'
+    webSocketUrl: 'ws://localhost:3000/',
+    apiBaseUrl: 'http://localhost:3000/'
 }
 
 export const eventTypes = {
